@@ -1,11 +1,23 @@
 use std::io;    // 標準ライブラリである 入出力ライブラリ を スコープに入れる
+use rand::Rng;  // 乱数生成メソッドの実装されたトレイトをスコープに入れる
 
 // プログラムのエントリーポイント main を宣言
 // 引数はないことがわかる
 fn main() {
 
-    // println!マクロを利用して数字を予想して入力を促す出力をする
+    // println!マクロを利用して数字の予想を促す出力をする
     println!("Guessing the Number!");
+
+    // rand::thread_rng関数から乱数生成器を取得している
+    // gen_rangeメソッドはRngトレイトで定義されており，範囲式を引数に取り，その範囲内の乱数を生成する
+    // 今回の範囲式は下限値は含むが上限値は含まないため， 1~100 は 1..101 と表現する必要がある
+    // 1..=100 と表現することもできる
+    let secret_number = rand::thread_rng().gen_range(1..101);   // 不変変数 secret_number を 1~100までの範囲の乱数 で 束縛する
+
+    // println!マクロを利用して秘密の数字を出力する
+    println!("The secret number is {}", secret_number);
+
+    // println!マクロを利用して数字の入力を促す出力をする
     println!("Please input your guess!");
 
 
