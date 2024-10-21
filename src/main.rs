@@ -1,5 +1,6 @@
-use std::io;    // 標準ライブラリである 入出力ライブラリ を スコープに入れる
-use rand::Rng;  // 乱数生成メソッドの実装されたトレイトをスコープに入れる
+use std::io;            // 標準ライブラリである 入出力ライブラリ を スコープに入れる
+use std::cmp::Ordering; // 標準ライブラリから列挙子を持つ比較enumをスコープに入れる
+use rand::Rng;          // 乱数生成メソッドの実装されたトレイトをスコープに入れる
 
 // プログラムのエントリーポイント main を宣言
 // 引数はないことがわかる
@@ -48,9 +49,18 @@ fn main() {
         // この処理を行わない時，Result値を利用しておらず，エラーの可能性に対応していないことからコンパイル時に警告が出る
         .expect("Failed to read line");
 
-    // 24行目からの一連のメソッドは次のように１行に収めることもできる
     // io::stdin().read_line(&mut guess).expect("Failied to read line");
 
+
+    // guess に対してある型から別の型に値を変換する時によく使用されるシャドーイングをする
+    // 入力が文字列として格納された guess は Stringインスタンスである
+    // このインスタンスの trimメソッド は文字列の先頭と末尾の空白，改行文字などをすべて削除する
+    // パースは文字列を解析して何らかの数値にする．さまざまな数値型へパースできるため，変数に注釈をつける必要がある．
+    let guess: u32 = guess.trim().parse()
+        // parseは論理的に数値に変換できる文字にしか使えないため，よくエラーとなる．このため，Result型を返す．
+        .expect("Please type a number!");
+
+    // let guess: u32 = guess.trim().parse().expect("Please type a number!");
 
     //  {} は値を所定の場所に出力するためのもの
     // 複数の変数の値を出力したい時は以下のように記述する
@@ -58,5 +68,16 @@ fn main() {
     //      println!("1st number is {}, 2nd number is {}", first, second);
     println!("Your guess is {}", guess); // println!マクロのプレースホルダーを利用して値を出力する
 
+
+    // cmpメソッドは二つの値の比較を行う．比較できるものなら何に対しても呼び出せる．
+    // Ordering列挙型の列挙子を返す．match式を利用している．
+    // match式はアームで構成されており，パターンにマッチした時に実行されるコードで構成される．
+    // 例えば，cmpは50と38を比較すると，50が大きいためOrdering::Greaterを返す．
+    // match式はこれを各アームのパターンで吟味し，マッチしたものを実行する．
+    match guess.cmp(&secret_number) {
+        Ordering::Less => println!("Too small!"),   // 小さかった時
+        Ordering::Greater => println!("Too big!"),  // 大きかった時
+        Ordering::Equal => println!("You win!"),    // 同じだった時
+    }
 
 }
